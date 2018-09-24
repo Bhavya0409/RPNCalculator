@@ -4,9 +4,23 @@ const VALID_CHARACTERS = '0123456789.+-*/()';
 
 let i = rl.createInterface(process.stdin, process.stdout);
 
+// TODO:
+// 1.
+// You need to handle multi-digit numbers even though the sample code does not.
+// In your version, numbers (operands) are separated from operators by zero or more spaces,
+// while numbers are separated from other numbers by one or more spaces.
+// While negative numbers cannot be input by the user, the result may be negative based on the input math problem.
+// 2.
+// Support "%"
+// 3.
+//  For +10 extra credit, also support raising a number to a power with the
+//  POW operator, which must appear as those three letters in all uppercase.
+
 askQuestion = () => {
   // 10.2*(8-6)/3+112.5
-  i.question("Enter your mathematical infix expression or \"quit\" to exit. Supported characters include +-*/()\n", (input) => {
+  i.question("Enter your mathematical infix expression or \"quit\" to exit. Supported characters include +-*/()\n", (rawInput) => {
+    // Remove all spaces in the rawInput
+    const input = rawInput.replace(/\s/g,'')
     if (input === 'quit') {
       console.log('exiting...')
       i.close();
