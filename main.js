@@ -4,21 +4,9 @@ const VALID_CHARACTERS = '0123456789.+-*/()%';
 
 let i = rl.createInterface(process.stdin, process.stdout);
 
-// TODO:
-// 1.
-// You need to handle multi-digit numbers even though the sample code does not.
-// In your version, numbers (operands) are separated from operators by zero or more spaces,
-// while numbers are separated from other numbers by one or more spaces.
-// While negative numbers cannot be input by the user, the result may be negative based on the input math problem.
-// 2.
-// Support "%"
-// 3.
-//  For +10 extra credit, also support raising a number to a power with the
-//  POW operator, which must appear as those three letters in all uppercase.
-
 askQuestion = () => {
   // 10.2*(8-6)/3+112.5
-  i.question("Enter your mathematical infix expression or \"quit\" to exit. Supported characters include +-*/()%\n", (rawInput) => {
+  i.question("Enter your mathematical infix expression or \"quit\" to exit. Supported characters include +-*/()% or the word POW\n", (rawInput) => {
     // Remove all spaces in the rawInput
     const input = rawInput.replace(/\s/g,'')
     if (input === 'quit') {
@@ -29,7 +17,8 @@ askQuestion = () => {
       console.log('Input invalid.');
       askQuestion();
     } else {
-      const postfix = convertToPostFix(input);
+      const infix = rawInput.replace(/POW/g,'^')
+      const postfix = convertToPostFix(infix);
 
       printPostfix(postfix);
 
@@ -47,8 +36,22 @@ askQuestion = () => {
  */
 validateInput = (infix) => {
   for (let i = 0; i < infix.length; i++) {
-    if (VALID_CHARACTERS.indexOf(infix.charAt(i)) === -1) {
-      return false;
+    if (infix.charAt(i) === 'P') {
+      // If the character is P, make sure the next 2 characters are O and W
+      if (i + 3 > infix.length - 1) {
+        // If the length of the string is less then the index of the character + 3,
+        // then there is no way POW can be spelled out with a number after it, so return false
+        return false;
+      } else if (infix.charAt(i+1) !== 'O' || infix.charAt(i+2) !== 'W') {
+        // If the character after the index is not O or 2 characters after the index is not W, return false
+        return false;
+      } else {
+        i = i + 2;
+      }
+    } else {
+      if (VALID_CHARACTERS.indexOf(infix.charAt(i)) === -1) {
+        return false;
+      }
     }
   }
   return true;
@@ -134,6 +137,8 @@ getOrder = (char) => {
     return 1;
   } else if (char === '*' || char === '/') {
     return 2;
+  } else if (char === '^') {
+    return 3;
   } else {
     return 0;
   };
@@ -147,7 +152,11 @@ getOrder = (char) => {
 printPostfix = (postfix) => {
   let str = ''
   postfix.forEach((s) => {
-    str += s  + ' ';
+    if (s === '^') {
+      str += 'POW '
+    } else {
+      str += s  + ' ';
+    }
   })
   console.log('postfix is:' + str);
 };
@@ -180,6 +189,9 @@ calculatePostfix = (postfix) => {
         case '%':
             stack.push(first % second);
             break;
+        case '^':
+          stack.push(Math.pow(first, second));
+          break;
         default:
           console.log('something went wrong...');
           stack.push(first);
