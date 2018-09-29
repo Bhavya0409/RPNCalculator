@@ -1,6 +1,6 @@
 const rl = require('readline');
 
-const VALID_CHARACTERS = '0123456789.+-*/()';
+const VALID_CHARACTERS = '0123456789.+-*/()%';
 
 let i = rl.createInterface(process.stdin, process.stdout);
 
@@ -18,7 +18,7 @@ let i = rl.createInterface(process.stdin, process.stdout);
 
 askQuestion = () => {
   // 10.2*(8-6)/3+112.5
-  i.question("Enter your mathematical infix expression or \"quit\" to exit. Supported characters include +-*/()\n", (rawInput) => {
+  i.question("Enter your mathematical infix expression or \"quit\" to exit. Supported characters include +-*/()%\n", (rawInput) => {
     // Remove all spaces in the rawInput
     const input = rawInput.replace(/\s/g,'')
     if (input === 'quit') {
@@ -177,11 +177,14 @@ calculatePostfix = (postfix) => {
         case '/':
           stack.push(first / second);
           break;
-          default:
-            console.log('something went wrong...');
-            stack.push(first);
-            stack.push(second);
+        case '%':
+            stack.push(first % second);
             break;
+        default:
+          console.log('something went wrong...');
+          stack.push(first);
+          stack.push(second);
+          break;
       }
     } else {
       // Item is a number, so just push onto the stack
