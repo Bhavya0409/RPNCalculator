@@ -167,45 +167,42 @@ printPostfix = (postfix) => {
  */
 calculatePostfix = (postfix) => {
   const stack = [];
-  postfix.forEach((item) => {
+  for (let i = 0; i < postfix.length; i++) {
     // If the item is not a number (i.e. operation)
+    const item = postfix[i];
     if (isNaN(item)) {
       // Pop off the first top two numbers on the stack and execute the operation. Push the result back onto the stack.
       const second = parseFloat(stack.pop());
       const first = parseFloat(stack.pop());
-      switch (item) {
-        case '+':
-          stack.push(first + second);
+      if (item === '+') {
+        stack.push(first + second);
+      } else if (item === '-') {
+        stack.push(first - second);
+      } else if (item === '*') {
+        stack.push(first * second);
+      } else if (item === '/') {
+        if (second === 0) {
+          // Can't divide by 0
           break;
-        case '-':
-          stack.push(first - second);
-          break;
-        case '*':
-          stack.push(first * second);
-          break;
-        case '/':
-          stack.push(first / second);
-          break;
-        case '%':
-            stack.push(first % second);
-            break;
-        case '^':
-          stack.push(Math.pow(first, second));
-          break;
-        default:
-          console.log('something went wrong...');
-          stack.push(first);
-          stack.push(second);
-          break;
+        }
+        stack.push(first / second);
+      } else if (item === '%') {
+        stack.push(first % second);
+      } else if (item === '^') {
+        stack.push(Math.pow(first, second));
+      } else {
+        console.log('something went wrong...');
+        stack.push(first);
+        stack.push(second);
       }
     } else {
       // Item is a number, so just push onto the stack
       stack.push(item);
     }
-  });
+  }
 
   // At this point, the stack should only have 1 item so display that item.
-  console.log(stack[0]);
+  console.log(stack[0] || NaN);
 }
 
 askQuestion();
