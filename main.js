@@ -183,6 +183,7 @@ calculatePostfix = (postfix) => {
       } else if (item === '/') {
         if (second === 0) {
           // Can't divide by 0
+          stack.length = 0;
           break;
         }
         stack.push(first / second);
